@@ -14,12 +14,11 @@ class LatexToImage
 	end
 
 	def process
-		
+		tic = Time.now
 		latex = @latexpreamble + @begindocument + @texinput + @latexfooter
 
 		Dir.mkdir(@foldername) unless File::exists?(@foldername)
 		Dir.chdir(@foldername)
-		debug Dir.pwd
 
 		file = File.open(@filename + ".tex", "w+")
 		file.puts latex
@@ -31,12 +30,23 @@ class LatexToImage
 				"convert -trim -transparent white " + @filename + ".ps " + @filename + ".png; pwd"
 		cmd =  "/bin/bash -cl '" + latexpipe + dvips + processPipe + "'" 
 
-		IO.popen("#{cmd} 2>&1") do |f|
+		p0 = IO.popen("#{cmd} 2>&1") do |f|
 			while line = f.gets do
 				debug line
 			end
 		end
+
+		#p0 = Kernel.system("#{cmd}")
+		debug "p0: " + p0.to_s
+		#p1 = Kernel.system("/bin/bash -cl '#{latexpipe}'")
+		#debug "p1: " + p1.to_s
+		#p2 = Kernel.system("/bin/bash -cl '#{dvips}'")
+		#debug "p2: " + p2.to_s
+		#p3 = Kernel.system("/bin/bash -cl '#{processPipe}'")
+		#debug "p3: " + p3.to_s
 		Dir.chdir("..")
+		toc = Time.now
+		debug (toc-tic).to_f
 	end
 end
 
