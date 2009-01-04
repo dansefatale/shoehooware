@@ -8,7 +8,8 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 				@mainback_straight = background "img/Shoehoo_sketch_w500.png"
 				@mainback_think =  background "img/Shoehoo_eyes_hidden_sketch_w500.png"
 				@mainback_think.hide
-
+			
+				# the @busy variable indicates if the latex thread is running
 				@busy = false
 				@ticker = animate(5) do |frame|
 					if !@busy
@@ -35,10 +36,12 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 						@busy = true
 						@ticker.start
 						debug "Will think"
+
 						Thread.new do
-							# determine a filename
 							debug "Thinking in Thread"
-							Dir.chdir("/Users/sevi/programming/ruby/shoes/shoetex/img/textest")
+		
+							# Determine a file name
+							Dir.chdir("/Users/sevi/programming/ruby/shoes/shoetex/img/textest") #FIXME
 							filebase = "LatexImage1"
 							j = 2
 
@@ -46,9 +49,10 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 								filebase = "LatexImage" + j.to_s
 								j += 1 
 							end 
-						
+							
+							# Fire up our latex processor
 							lti = LatexToImage.new(@tex.text ,filebase,"tmpfolder")
-							lti.latexpreamble += "\\usepackage{amsmath}"
+							lti.latexpreamble += "\\usepackage{amssymb}"
 							tic = Time.now
 							lti.process
 							toc = Time.now
@@ -58,11 +62,20 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 							File.copy("tmpfolder/" + filebase + ".png", ".")
 							File.delete(*Dir["tmpfolder/*"])
 							Dir.rmdir("tmpfolder") 
-
+						
+							# Take the image we have just created
+							# and display it under the input box
 							@latexinput.append do
-								@disp = image filebase + ".png" 
-								@disp.style(:height => (@disp.full_height * 1.5).ceil)
+								@disp = stack :width => 250 do
+									pic = image filebase + ".png" 	
+									if pic.width > 250
+										pic.style(:height => (pic.full_height * 1.3).ceil,
+													:width => 250)
+									end
+								end
 							end
+		
+							# Tell that we're finished
 							@busy = false
 							debug "Have thought and leave Thread"
 						end
@@ -75,8 +88,10 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 				
 			end
 
+			# For emergencies
 			flow do
 					button "Straight!!" do
+						@ticker.stop
 						@latexinput.show
 						@mainback_think.hide
 						@mainback_straight.show
