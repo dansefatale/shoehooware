@@ -1,3 +1,16 @@
+# This is Mr.Shoehoo, the smart eagle owl with Shoes in his first mission -- ShoeTeX.
+# Give him some Latex formula and he will notate it in beautiful math notation and show
+# it to you. As a gift you can also keep a png image of your formula. Of course Mr.Shoehoo
+# needs some tools to work. These are:
+# 			- ImageMagick and its commandline tools (he needs 'convert')
+#			- Latex of course
+#			- Ghostscript
+#           - dvips
+# Currently Mr.Shoehoo works on OS X Tiger and probably Linux although he hasn't been
+# there yet, he also plans to visit windows but before he does that he needs to become
+# a bit more self confident.
+
+
 require 'rlti'
 require 'ftools'
 
@@ -26,7 +39,7 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 				end
 
 	
-				@latexinput = stack do
+				@latexinput = stack :top => 75, :left => 20 do
 
 					@tex = edit_line :width => 250
 					@texbutton = button "Do it!" 
@@ -39,9 +52,15 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 
 						Thread.new do
 							debug "Thinking in Thread"
-		
-							# Determine a file name
-							Dir.chdir("/Users/sevi/programming/ruby/shoes/shoetex/img/textest") #FIXME
+							
+							# Create our working directory
+							curdir = Dir.pwd
+							img_dir = File.join('', curdir, 'tex_images')
+							Dir.mkdir(img_dir) unless File.exists?(img_dir)
+							Dir.chdir(img_dir)
+							debug Dir.pwd
+				
+							# Determine a filename
 							filebase = "LatexImage1"
 							j = 2
 
@@ -59,7 +78,7 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 							debug "process call: " + ((toc - tic).to_f).to_s
 
 							# Cleanup
-							File.copy("tmpfolder/" + filebase + ".png", ".")
+							File.copy(File.join("tmpfolder", filebase + ".png"), ".")
 							File.delete(*Dir["tmpfolder/*"])
 							Dir.rmdir("tmpfolder") 
 						
@@ -74,7 +93,8 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 									end
 								end
 							end
-		
+							
+							Dir.chdir(curdir)
 							# Tell that we're finished
 							@busy = false
 							debug "Have thought and leave Thread"
@@ -82,10 +102,6 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 					}
 
 				end
-
-				@latexinput.move(20,75)
-				
-				
 			end
 
 			# For emergencies
