@@ -22,22 +22,6 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 				@mainback_think =  background "img/Shoehoo_eyes_hidden_sketch_w500.png"
 				@mainback_think.hide
 			
-				# the @busy variable indicates if the latex thread is running
-				@busy = false
-				@ticker = animate(5) do |frame|
-					if !@busy
-						@mainback_straight.show
-						@mainback_think.hide
-						@latexinput.show
-						@ticker.stop
-					else
-						@mainback_straight.hide
-						@mainback_think.show
-						@latexinput.hide
-						@disp.remove
-					end
-				end
-
 	
 				@latexinput = stack :top => 75, :left => 20 do
 
@@ -46,8 +30,10 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 					@disp = para "Type some Latex code"
 
 					@texbutton.click {
-						@busy = true
 						@ticker.start
+
+						# The @busy variable indicates if the latex thread is running
+						@busy = true
 						debug "Will think"
 
 						Thread.new do
@@ -55,9 +41,9 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 							
 							# Create our working directory
 							curdir = Dir.pwd
-							img_dir = File.join('', curdir, 'tex_images')
-							Dir.mkdir(img_dir) unless File.exists?(img_dir)
-							Dir.chdir(img_dir)
+							@img_dir = File.join('', curdir, 'tex_images')
+							Dir.mkdir(@img_dir) unless File.exists?(@img_dir)
+							Dir.chdir(@img_dir)
 							debug Dir.pwd
 				
 							# Determine a filename
@@ -102,6 +88,24 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 					}
 
 				end
+
+				# the @busy variable indicates if the latex thread is running
+				@busy = false
+				@ticker = animate(5) do |frame|
+					if !@busy
+						@mainback_straight.show
+						@mainback_think.hide
+						@latexinput.show
+						@ticker.stop
+					else
+						@mainback_straight.hide
+						@mainback_think.show
+						@latexinput.hide
+						@disp.remove
+					end
+				end
+
+
 			end
 
 			# For emergencies
