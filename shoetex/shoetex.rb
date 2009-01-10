@@ -15,8 +15,48 @@ require 'rlti'
 require 'ftools'
 
 Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :resizable => false do
-	background  chocolate
-	stack do
+	background rgb(85,34,0)
+	
+	# Set a standard dir for the images
+	@img_dir = File.join(Dir.pwd, 'tex_images')
+	
+	@folder_screen = stack :width => 520, :height => 430 do
+		background rgb(85,34,0)
+		fill chocolate
+		rect 10, 10, 500, 410, 10
+		
+		# This one holds the content
+		stack :top => 175, :left => 15, :width => 500 do
+			@choose_dir = edit_line :width => 480
+			@choose_dir.text = @img_dir
+
+			flow do
+				button "Choose..." do
+					@choose_dir.text = ask_open_folder	
+				end
+				
+				# Let's slide down
+				button "Ok!" do
+					@img_dir = @choose_dir.text
+
+					@slider = animate(43) do |i|
+						if 430 - 10 * i >= 0
+							@folder_screen.move 0, 10 * i
+							@main_screen.move 0, -430 + 10 * i
+						else
+							@slider.stop
+						end
+					end
+				end
+			end
+		end
+	end
+
+
+	@main_screen = stack :width => 520, :height => 430, :top => -430 do
+
+			fill chocolate
+			rect 4, 4, 512, 420, 3
 			stack :margin => 10, :height => 386 do
 				@mainback_straight = background "img/Shoehoo_sketch_w500.png"
 				@mainback_think =  background "img/Shoehoo_eyes_hidden_sketch_w500.png"
@@ -41,7 +81,6 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 							
 							# Create our working directory
 							curdir = Dir.pwd
-							@img_dir = File.join('', curdir, 'tex_images')
 							Dir.mkdir(@img_dir) unless File.exists?(@img_dir)
 							Dir.chdir(@img_dir)
 							debug Dir.pwd
@@ -89,8 +128,10 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 
 				end
 
-				# the @busy variable indicates if the latex thread is running
 				@busy = false
+
+				# The ticker keeps Mr. Shoehoo in thinking
+				# position while the latex thread is running
 				@ticker = animate(5) do |frame|
 					if !@busy
 						@mainback_straight.show
@@ -108,13 +149,29 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 
 			end
 
-			# For emergencies
+
 			flow do
-					button "Straight!!" do
+					background rgb(85,34,0)
+
+					# In case of emergencies
+					button "Stop!", :margin => 10 do
 						@ticker.stop
 						@latexinput.show
 						@mainback_think.hide
 						@mainback_straight.show
+					end
+				
+					# We can also choose a different folder	
+					button "Change Folder", :margin => 10 do
+						@slider = animate(43) do |i|
+							if 430 - 10 * i >= 0
+								@folder_screen.move 0, 430 - 10 * i
+								@main_screen.move 0, -(10 * i)
+							else
+								@slider.stop
+							end
+						end
+
 					end
 			end	
 	end
