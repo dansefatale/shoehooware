@@ -27,6 +27,7 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 		
 		# This one holds the content
 		stack :top => 175, :left => 15, :width => 500 do
+			para "Were do you want Mr. Shoehoo to put your images?"
 			@choose_dir = edit_line :width => 480
 			@choose_dir.text = @img_dir
 
