@@ -16,12 +16,12 @@ require 'ftools'
 
 Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :resizable => false do
 	background rgb(85,34,0)
+	border black, :strokewidth => 1
 	
 	# Set a standard dir for the images
 	@img_dir = File.join(Dir.pwd, 'tex_images')
 	
 	@folder_screen = stack :width => 520, :height => 430 do
-		background rgb(85,34,0)
 		fill chocolate
 		rect 10, 10, 500, 410, 10
 		
@@ -146,34 +146,32 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 						@disp.remove
 					end
 				end
-
-
 			end
 
 
-			flow do
-					background rgb(85,34,0)
+		flow  :margin_left => 5, :margin_right => 4 do
+			background rgb(85,34,0)
+			# border black, :strokewidth => 1
 
-					# In case of emergencies
-					button "Stop!", :margin => 10 do
-						@ticker.stop
-						@latexinput.show
-						@mainback_think.hide
-						@mainback_straight.show
-					end
+			# In case of emergencies
+			button "Stop!", :margin_left => 10 do
+				@ticker.stop
+				@latexinput.show
+				@mainback_think.hide
+				@mainback_straight.show
+			end
 				
-					# We can also choose a different folder	
-					button "Change Folder", :margin => 10 do
-						@slider = animate(43) do |i|
-							if 430 - 10 * i >= 0
-								@folder_screen.move 0, 430 - 10 * i
-								@main_screen.move 0, -(10 * i)
-							else
-								@slider.stop
-							end
-						end
-
+			# We can also choose a different folder	
+			button "Change Folder", :margin_left => 10 do
+				@slider = animate(43) do |i|
+					if 430 - 10 * i >= 0
+						@folder_screen.move 0, 430 - 10 * i
+						@main_screen.move 0, -(10 * i)
+					else
+						@slider.stop
 					end
-			end	
+				end
+			end
+		end	
 	end
 end
