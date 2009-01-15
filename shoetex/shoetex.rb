@@ -175,6 +175,8 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 				@latexinput.show
 				@mainback_think.hide
 				@mainback_straight.show
+				@eye_r.show
+				@eye_l.show
 			end
 				
 			# We can also choose a different folder	
