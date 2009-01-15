@@ -8,8 +8,8 @@ class Eye < Shoes::Widget
 	def initialize(left, top,  opts = {}) #fill_col, outer_rad, inner_rad, eye_ball_stroke, pupil_stroke)
 		@b = left
 		@a = top
-		@r = opts[:outer_rad] || 50						# The radius of the eye
-		@r_p = opts[:inner_rad] || 20					# The radius of the pupil
+		@r = opts[:eyeball_rad] || 50						# The radius of the eye
+		@r_p = opts[:pupil_rad] || 20					# The radius of the pupil
 		@e_col = opts[:eyeball_col] || yellow			# The color of the eyeball
 		@p_col = opts[:pupil_col] || white				# The color of the pupil
 		@outer_stroke = opts[:eyeball_stroke] || 3		# Strokewidth for the eyeball

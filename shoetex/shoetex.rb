@@ -10,7 +10,7 @@
 # there yet, he also plans to visit windows but before he does that he needs to become
 # a bit more self confident.
 
-
+require '../lib/eye'
 require 'rlti'
 require 'ftools'
 
@@ -59,11 +59,23 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 			fill chocolate
 			rect 4, 4, 512, 420, 3
 			stack :margin => 10, :height => 386 do
-				@mainback_straight = background "img/Shoehoo_sketch_w500.png"
-				@mainback_think =  background "img/Shoehoo_eyes_hidden_sketch_w500.png"
+				@mainback_straight = background "img/Shoehoo_w500.png"
+				@mainback_think =  background "img/Shoehoo_eyes_hidden_w500.png"
 				@mainback_think.hide
 			
-	
+				# draw the eyes
+				@eye_l = eye 349, 78,:eyeball_rad => 22,
+								 	 :pupil_rad => 9, 
+									 :eyeball_stroke => 6,
+									 :pupil_stroke => 9
+			
+				@eye_r = eye 406, 78,:eyeball_rad => 22,
+								 	 :pupil_rad => 9, 
+									 :eyeball_stroke => 6,
+									 :pupil_stroke => 9
+
+												 
+
 				@latexinput = stack :top => 75, :left => 20 do
 
 					@tex = edit_line :width => 250
@@ -138,18 +150,22 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 						@mainback_straight.show
 						@mainback_think.hide
 						@latexinput.show
+						@eye_r.show
+						@eye_l.show
 						@ticker.stop
 					else
 						@mainback_straight.hide
 						@mainback_think.show
 						@latexinput.hide
+						@eye_r.hide
+						@eye_l.hide
 						@disp.remove
 					end
 				end
 			end
 
 
-		flow  :margin_left => 5, :margin_right => 4 do
+		flow  :margin_left => 5, :margin_right => 4, :margin_top => 4 do
 			background rgb(85,34,0)
 			# border black, :strokewidth => 1
 
@@ -174,4 +190,11 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 			end
 		end	
 	end
+
+	#  make the eyes follow you everywhere
+	motion do |left,top|
+		@eye_l.follow(left,top)
+		@eye_r.follow(left,top)
+	end
+
 end
