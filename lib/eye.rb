@@ -1,63 +1,63 @@
-# Draw a eye that follows the cursor
+# Draw an eye 
+#
+# Use the follow method to make the eye look into some direction.
+# A usage example is at the bottom.
 
-class Eye < Widget
-	def initialize( stack, top, left, fill_col, outer_rad, inner_rad, eye_ball_stroke, pupil_stroke)
-		@stack = stack
-		@stack.app do
-			@b = left
-			@a = top
-			@r = outer_rad
-			@r_p = inner_rad
-			@outer_stroke = eye_ball_stroke
-			@inner_stroke = pupil_stroke
-			@diff_r = @r_p + @inner_stroke/2
-			@col = fill_col
 
-			fill @col
-			strokewidth @outer_stroke
-			@ball = oval :center => :true,
-						:left => @b,
-				 		:top => @a,
-						:radius => @r
+class Eye < Shoes::Widget
+	def initialize(left, top,  opts = {}) #fill_col, outer_rad, inner_rad, eye_ball_stroke, pupil_stroke)
+		@b = left
+		@a = top
+		@r = opts[:outer_rad] || 50						# The radius of the eye
+		@r_p = opts[:inner_rad] || 20					# The radius of the pupil
+		@e_col = opts[:eyeball_col] || yellow			# The color of the eyeball
+		@p_col = opts[:pupil_col] || white				# The color of the pupil
+		@outer_stroke = opts[:eyeball_stroke] || 3		# Strokewidth for the eyeball
+		@inner_stroke = opts[:pupil_stroke] || 18		# Strokewidth for the pupil
+
+		@diff_r = @r_p + @inner_stroke/2
+		
+		fill @e_col
+		strokewidth @outer_stroke
+		@ball = oval :center => :true,
+					:left => @b,
+			 		:top => @a,
+					:radius => @r
 				
-			fill white
-			strokewidth @inner_stroke
-			@pupil = oval :center => :true, 
-							:left => @b,
-							:top => @a ,
-							:radius => @r_p
-		end
+		fill @p_col
+		strokewidth @inner_stroke
+		@pupil = oval :center => :true, 
+						:left => @b,
+						:top => @a ,
+						:radius => @r_p
 	end
+	
 
+	# Cause the eye to look towards the point (left,top)
 	def follow(left, top)
-		@stack.app do
-				if (@a - top)**2 + (@b - left)**2 <= (@r - @diff_r)**2
-					l,t = left, top
-				else
-					dy = left - @b
-					dx = top - @a
-					rr = Math.sqrt(dx**2 + dy**2)
-					l = @b + ((@r - @diff_r)/rr)*dy
-					t = @a + ((@r - @diff_r)/rr)*dx 
-				end	
-				@pupil.move l, t
-		end
+		if (@a - top)**2 + (@b - left)**2 <= (@r - @diff_r)**2
+			l,t = left, top
+		else
+			dy = left - @b
+			dx = top - @a
+			rr = Math.sqrt(dx**2 + dy**2)
+			l = @b + ((@r - @diff_r)/rr)*dy
+			t = @a + ((@r - @diff_r)/rr)*dx 
+		end	
+		@pupil.move l, t
 	end
 end
 
 
-
-Shoes.app :width => 400, :height => 400 do
-	@s = stack
-	@t = stack
-	stack do
-		@eye1 = Eye.new( @s,100, 100, yellow, 50, 20, 3, 18)
-		@eye2 =	Eye.new( @t,300, 100, yellow, 50, 20, 3, 18)
-	end
-		motion do |l,t|
-			left = l
-			top = t
-			@eye1.follow(l,t)
-			@eye2.follow(left,top)
-		end
-end
+###################### EXAMPLE #######################
+#
+# Shoes.app :width => 300, :height => 150, :resizable => false do
+# 	stack do
+# 		@eye1 = eye 75, 75
+# 		@eye2 =	eye 225, 75
+# 	end
+# 	motion do |l,t|
+# 		@eye1.follow(l,t)
+# 		@eye2.follow(l,t)
+# 	end
+# end
