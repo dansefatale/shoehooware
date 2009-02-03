@@ -1,4 +1,3 @@
-- Remove debug messages
 - Check if we have all the tools we need
 - The image display needs some polishing
 - Set a folder if empty string is given

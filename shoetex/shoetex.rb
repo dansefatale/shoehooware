@@ -13,13 +13,19 @@
 require '../lib/eye'
 require 'rlti'
 require 'ftools'
+require 'etc'
+require 'rbconfig'
 
 Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :resizable => false do
 	background rgb(85,34,0)
 	border black, :strokewidth => 1
 	
 	# Set a standard dir for the images
-	@img_dir = File.join(Dir.pwd, 'tex_images')
+	user_dir = unless Config::CONFIG['target_os'].include? "windows"
+				Etc.getpwnam(`who`.split[0])[:dir]
+			end
+
+	@img_dir = File.join(user_dir, 'tex_images')
 	
 	@folder_screen = stack :width => 520, :height => 430 do
 		fill chocolate
@@ -78,7 +84,7 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 
 				@latexinput = stack :top => 75, :left => 20 do
 
-					@tex = edit_line :width => 250
+					@tex = edit_box :width => 250, :height => 56
 					@texbutton = button "Do it!" 
 					@disp = para "Type some Latex code"
 
@@ -87,16 +93,13 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 
 						# The @busy variable indicates if the latex thread is running
 						@busy = true
-						debug "Will think"
 
 						Thread.new do
-							debug "Thinking in Thread"
 							
 							# Create our working directory
 							curdir = Dir.pwd
 							Dir.mkdir(@img_dir) unless File.exists?(@img_dir)
 							Dir.chdir(@img_dir)
-							debug Dir.pwd
 				
 							# Determine a filename
 							filebase = "LatexImage1"
@@ -110,10 +113,7 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 							# Fire up our latex processor
 							lti = LatexToImage.new(@tex.text ,filebase,"tmpfolder")
 							lti.latexpreamble += "\\usepackage{amssymb}"
-							tic = Time.now
 							lti.process
-							toc = Time.now
-							debug "process call: " + ((toc - tic).to_f).to_s
 
 							# Cleanup
 							File.copy(File.join("tmpfolder", filebase + ".png"), ".")
@@ -135,7 +135,6 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 							Dir.chdir(curdir)
 							# Tell that we're finished
 							@busy = false
-							debug "Have thought and leave Thread"
 						end
 					}
 
@@ -198,5 +197,4 @@ Shoes.app :title => "Mr.Shoehoo does LaTeX", :width => 520, :height => 430, :res
 		@eye_l.follow(left,top)
 		@eye_r.follow(left,top)
 	end
-
 end
