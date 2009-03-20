@@ -1,4 +1,5 @@
 - Check if we have all the tools we need
 - The image display needs some polishing
+    - Use dvipng
 - Set a folder if empty string is given
 - maybe some animation when "thinking"
